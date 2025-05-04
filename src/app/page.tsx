@@ -1,103 +1,253 @@
-import Image from "next/image";
+"use client";
+
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import About from "@/components/About";
+import Projects from "@/components/Projects";
+import Contact from "@/components/Contact";
+import Timeline from "@/components/Timeline";
+import { FaArrowDown, FaCode, FaLaptopCode } from "react-icons/fa";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const heroRef = useRef(null);
+  const { scrollY } = useScroll();
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+  const { language } = useLanguage();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  // Parallax effect for the hero section
+  const y = useTransform(scrollY, [0, 300], [0, 100]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+
+  const heroText = {
+    en: {
+      student: "Software Engineering Student",
+      description:
+        "Passionate about creating innovative solutions and building the future of technology. Currently pursuing my degree in Software Engineering with a focus on web development.",
+      viewProjects: "View Projects",
+      contactMe: "Contact Me",
+      scrollDown: "Scroll Down",
+    },
+    nl: {
+      student: "Software Engineering Student",
+      description:
+        "Gepassioneerd over het creëren van innovatieve oplossingen en het bouwen aan de toekomst van technologie. Momenteel volg ik mijn opleiding Software Engineering met een focus op webontwikkeling.",
+      viewProjects: "Bekijk Projecten",
+      contactMe: "Neem Contact Op",
+      scrollDown: "Scroll naar beneden",
+    },
+  };
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".hero-text", {
+        y: 100,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: "power4.out",
+      });
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // Mouse move effect for the hero section
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({
+        x: e.clientX,
+        y: e.clientY,
+      });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  // Calculate mouse position relative to the center of the screen
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setMouseOffset({
+        x: mousePosition.x - window.innerWidth / 2,
+        y: mousePosition.y - window.innerHeight / 2,
+      });
+    }
+  }, [mousePosition]);
+
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black text-gray-900 dark:text-white transition-colors duration-300">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute w-[500px] h-[500px] rounded-full bg-purple-300/20 dark:bg-purple-900/20 blur-3xl"
+          animate={{
+            x: [0, 100, 0],
+            y: [0, 50, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+          style={{
+            left: "10%",
+            top: "20%",
+          }}
+        />
+        <motion.div
+          className="absolute w-[400px] h-[400px] rounded-full bg-pink-300/20 dark:bg-pink-900/20 blur-3xl"
+          animate={{
+            x: [0, -100, 0],
+            y: [0, -50, 0],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+          style={{
+            right: "10%",
+            bottom: "20%",
+          }}
+        />
+      </div>
+
+      <motion.div
+        ref={heroRef}
+        className="container mx-auto px-4 py-20 relative z-10"
+        style={{ y, opacity }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="hero-text text-center"
+        >
+          <motion.div
+            animate={{
+              x: mouseOffset.x * 0.01,
+              y: mouseOffset.y * 0.01,
+            }}
+            transition={{ type: "spring", stiffness: 100, damping: 30 }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+              Abdullah Elmi
+            </h1>
+          </motion.div>
+
+          <motion.h2
+            className="text-2xl md:text-3xl mb-8 text-gray-700 dark:text-gray-300"
+            animate={{
+              x: mouseOffset.x * 0.005,
+              y: mouseOffset.y * 0.005,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 100,
+              damping: 30,
+              delay: 0.1,
+            }}
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+            {heroText[language].student}
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              x: mouseOffset.x * 0.003,
+              y: mouseOffset.y * 0.003,
+            }}
+            transition={{
+              delay: 0.5,
+              x: { type: "spring", stiffness: 100, damping: 30, delay: 0.2 },
+              y: { type: "spring", stiffness: 100, damping: 30, delay: 0.2 },
+            }}
+            className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-12"
+          >
+            {heroText[language].description}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{
+              opacity: 1,
+              x: mouseOffset.x * 0.002,
+              y: mouseOffset.y * 0.002,
+            }}
+            transition={{
+              delay: 0.8,
+              x: { type: "spring", stiffness: 100, damping: 30, delay: 0.3 },
+              y: { type: "spring", stiffness: 100, damping: 30, delay: 0.3 },
+            }}
+            className="flex flex-col md:flex-row justify-center gap-4"
+          >
+            <motion.button
+              className="px-8 py-3 bg-purple-600 rounded-full hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 group"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              as="a"
+              href="#projects"
+            >
+              <span>{heroText[language].viewProjects}</span>
+              <FaCode className="text-lg transform group-hover:rotate-12 transition-transform" />
+            </motion.button>
+
+            <motion.button
+              className="px-8 py-3 border border-purple-600 rounded-full hover:bg-purple-600/20 transition-colors flex items-center justify-center gap-2 group"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              as="a"
+              href="#contact"
+            >
+              <span>{heroText[language].contactMe}</span>
+              <FaLaptopCode className="text-lg transform group-hover:rotate-12 transition-transform" />
+            </motion.button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{
+              opacity: 1,
+              x: mouseOffset.x * 0.002,
+              y: mouseOffset.y * 0.002,
+            }}
+            transition={{
+              delay: 0.8,
+              x: { type: "spring", stiffness: 100, damping: 30, delay: 0.3 },
+              y: { type: "spring", stiffness: 100, damping: 30, delay: 0.3 },
+            }}
+            className="mt-16"
+          >
+            <motion.a
+              href="#about"
+              className="inline-flex flex-col items-center text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+              whileHover={{ y: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="mb-2">{heroText[language].scrollDown}</span>
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <FaArrowDown className="text-xl" />
+              </motion.div>
+            </motion.a>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+
+      <About />
+      <Timeline />
+      <Projects />
+      <Contact />
+    </main>
   );
 }
