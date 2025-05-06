@@ -185,16 +185,15 @@ export default function Home() {
             }}
             className="flex flex-col md:flex-row justify-center gap-4"
           >
-            <motion.button
+            <motion.a
               className="px-8 py-3 bg-purple-600 rounded-full hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              as="a"
               href="#projects"
             >
               <span>{heroText[language].viewProjects}</span>
               <FaCode className="text-lg transform group-hover:rotate-12 transition-transform" />
-            </motion.button>
+            </motion.a>
 
             <motion.button
               className="px-8 py-3 border border-purple-600 rounded-full hover:bg-purple-600/20 transition-colors flex items-center justify-center gap-2 group"
