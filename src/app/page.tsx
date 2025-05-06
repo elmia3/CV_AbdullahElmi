@@ -195,16 +195,15 @@ export default function Home() {
               <FaCode className="text-lg transform group-hover:rotate-12 transition-transform" />
             </motion.a>
 
-            <motion.button
+            <motion.a
               className="px-8 py-3 border border-purple-600 rounded-full hover:bg-purple-600/20 transition-colors flex items-center justify-center gap-2 group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              as="a"
               href="#contact"
             >
               <span>{heroText[language].contactMe}</span>
               <FaLaptopCode className="text-lg transform group-hover:rotate-12 transition-transform" />
-            </motion.button>
+            </motion.a>
           </motion.div>
 
           <motion.div
